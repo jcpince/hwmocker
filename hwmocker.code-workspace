@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"hwmocker.h": "c",
+			"*.hwmcnf": "json"
+		}
+	}
+}

@@ -1,0 +1,5 @@
+macro(add_subdirectory_ifdef config subdir)
+    if (${config})
+        add_subdirectory(${subdir})
+    endif()
+endmacro(add_subdirectory_ifdef)
