@@ -20,10 +20,28 @@
  * SOFTWARE.
  */
 
-#ifndef __HWMOCKER_CONFIG__H__
-#define __HWMOCKER_CONFIG__H__
+#ifndef __HWMOCKER_HWELEMENT_HPP
+#define __HWMOCKER_HWELEMENT_HPP
 
-#cmakedefine CONFIG_HWMOCK_SPI 1
-#cmakedefine CONFIG_HWMOCK_TESTS 1
+#include <nlohmann/json.hpp>
 
-#endif /* __HWMOCKER_CONFIG__H__ */
+using json = nlohmann::json;
+
+namespace HWMocker {
+
+///
+/// class HwElement
+
+class HwElement {
+  public:
+    json config;
+
+  protected:
+    /// Loads the configuration from a Json file
+    /// @return int
+    /// @param  config
+    virtual int load_config(json config) = 0;
+};
+} // namespace HWMocker
+
+#endif // __HWMOCKER_HWELEMENT_HPP

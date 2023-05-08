@@ -7,6 +7,7 @@
 #define DEVICE_IRQ_NUMBER 17
 #define HOST_IRQ_NUMBER 42
 
+#if 0
 struct device_data {
     struct hwmocker_device *device;
     struct hwmocker_irq_desc *irq_desc0;
@@ -59,10 +60,11 @@ int host_main(void *priv) {
 
     return 0;
 }
+#endif
 
 int main(int argc, char **argv) {
-    struct device_data device_data;
-    struct host_data host_data;
+    // struct device_data device_data;
+    // struct host_data host_data;
     struct hwmocker *mocker;
 
     if (argc != 2) {
@@ -75,7 +77,7 @@ int main(int argc, char **argv) {
     if (!mocker)
         return -ENOMEM;
 
-    struct hwmocker_device *device = hwmocker_get_device(mocker);
+    /*struct hwmocker_device *device = hwmocker_get_device(mocker);
     struct hwmocker_host *host = hwmocker_get_host(mocker);
 
     device->main_function = device_main;
@@ -92,6 +94,6 @@ int main(int argc, char **argv) {
     hwmocker_start(mocker);
 
     hwmocker_wait(mocker);
-    hwmocker_destroy(mocker);
+    hwmocker_destroy(mocker);*/
     return 0;
 }

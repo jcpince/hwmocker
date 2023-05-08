@@ -20,22 +20,55 @@
  * SOFTWARE.
  */
 
-#ifndef __HWMOCKER_GENERIC_IRQ_HH__
-#define __HWMOCKER_GENERIC_IRQ_HH__
+#ifndef __HWMOCKER_GPIOIRQ_HPP
+#define __HWMOCKER_GPIOIRQ_HPP
 
-class HWIrqHandler {};
+#include "GenericIrq.hpp"
+#include "Gpio.hpp"
 
-class IrqInterface {
+namespace HWMocker {
+
+///
+/// class GpioIrq
+
+class GpioIrq : public Gpio, virtual public GenericIrq {
+  public:
+    // Constructors/Destructors
+
+    ///
+    /// Empty Constructor
+    GpioIrq();
+
+    ///
+    /// Empty Destructor
+    virtual ~GpioIrq();
+
+    // Static Public attributes
+
+    // Public attributes
+
+    // Public static attribute accessor methods
+
+    // Public attribute accessor methods
+
   protected:
-    HWIrqHandler *handler;
+    // Static Protected attributes
 
-  public:
-    virtual void raise() = 0;
+    // Protected attributes
+
+    // Public static attribute accessor methods
+
+    // Public attribute accessor methods
+
+  private:
+    // Static Private attributes
+
+    // Private attributes
+
+    // Public static attribute accessor methods
+
+    // Public attribute accessor methods
 };
+} // namespace HWMocker
 
-class GpioIrq {
-  public:
-    void raise();
-}
-
-#endif /* __HWMOCKER_GENERIC_IRQ_HH__ */
+#endif // __HWMOCKER_GPIOIRQ_HPP

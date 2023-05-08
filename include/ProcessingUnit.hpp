@@ -20,10 +20,54 @@
  * SOFTWARE.
  */
 
-#ifndef __HWMOCKER_CONFIG__H__
-#define __HWMOCKER_CONFIG__H__
+#ifndef __HWMOCKER_PROCESSINGUNIT_HPP
+#define __HWMOCKER_PROCESSINGUNIT_HPP
 
-#cmakedefine CONFIG_HWMOCK_SPI 1
-#cmakedefine CONFIG_HWMOCK_TESTS 1
+#include "Gpio.hpp"
+#include "GpioController.hpp"
+#include "HwElement.hpp"
 
-#endif /* __HWMOCKER_CONFIG__H__ */
+#include <vector>
+
+namespace HWMocker {
+
+///
+/// class ProcessingUnit
+
+class ProcessingUnit : virtual public HwElement {
+  public:
+    ///
+    /// Empty Constructor
+    ProcessingUnit();
+
+    ///
+    /// Empty Destructor
+    virtual ~ProcessingUnit();
+
+    int load_config(json config);
+
+  private:
+    // Static Private attributes
+
+    // Private attributes
+
+    HWMocker::GpioController gpio_controller;
+    std::vector<HWMocker::Gpio *> gpios;
+
+    // Public static attribute accessor methods
+
+    // Public attribute accessor methods
+
+    ///
+    /// Set the value of gpio_controller
+    /// @param value the new value of gpio_controller
+    void setGpio_controller(HWMocker::GpioController value) { gpio_controller = value; }
+
+    ///
+    /// Get the value of gpio_controller
+    /// @return the value of gpio_controller
+    HWMocker::GpioController getGpio_controller() { return gpio_controller; }
+};
+} // namespace HWMocker
+
+#endif // __HWMOCKER_PROCESSINGUNIT_HPP

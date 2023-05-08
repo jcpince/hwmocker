@@ -20,10 +20,54 @@
  * SOFTWARE.
  */
 
-#ifndef __HWMOCKER_CONFIG__H__
-#define __HWMOCKER_CONFIG__H__
+#ifndef __HWMOCKER_GPIOCONTROLLER_HPP
+#define __HWMOCKER_GPIOCONTROLLER_HPP
 
-#cmakedefine CONFIG_HWMOCK_SPI 1
-#cmakedefine CONFIG_HWMOCK_TESTS 1
+#include <vector>
 
-#endif /* __HWMOCKER_CONFIG__H__ */
+namespace HWMocker {
+
+///
+/// class GpioController
+
+class GpioController {
+  public:
+    // Constructors/Destructors
+
+    ///
+    /// Empty Constructor
+    GpioController();
+
+    ///
+    /// Empty Destructor
+    virtual ~GpioController();
+
+    // Static Public attributes
+
+    // Public attributes
+
+    // Public static attribute accessor methods
+
+    // Public attribute accessor methods
+
+  protected:
+    // Static Protected attributes
+
+    // Protected attributes
+
+    // Public static attribute accessor methods
+
+    // Public attribute accessor methods
+
+  private:
+    // Static Private attributes
+
+    // Private attributes
+
+    // Public static attribute accessor methods
+
+    // Public attribute accessor methods
+};
+} // namespace HWMocker
+
+#endif // __HWMOCKER_GPIOCONTROLLER_HPP

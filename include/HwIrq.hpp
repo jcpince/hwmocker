@@ -20,10 +20,54 @@
  * SOFTWARE.
  */
 
-#ifndef __HWMOCKER_CONFIG__H__
-#define __HWMOCKER_CONFIG__H__
+#ifndef __HWMOCKER_HWIRQ_HPP
+#define __HWMOCKER_HWIRQ_HPP
 
-#cmakedefine CONFIG_HWMOCK_SPI 1
-#cmakedefine CONFIG_HWMOCK_TESTS 1
+#include "GenericIrq.hpp"
 
-#endif /* __HWMOCKER_CONFIG__H__ */
+namespace HWMocker {
+
+///
+/// class HwIrq
+
+class HwIrq : virtual public GenericIrq {
+  public:
+    // Constructors/Destructors
+
+    ///
+    /// Empty Constructor
+    HwIrq();
+
+    ///
+    /// Empty Destructor
+    virtual ~HwIrq();
+
+    // Static Public attributes
+
+    // Public attributes
+
+    // Public static attribute accessor methods
+
+    // Public attribute accessor methods
+
+  protected:
+    // Static Protected attributes
+
+    // Protected attributes
+
+    // Public static attribute accessor methods
+
+    // Public attribute accessor methods
+
+  private:
+    // Static Private attributes
+
+    // Private attributes
+
+    // Public static attribute accessor methods
+
+    // Public attribute accessor methods
+};
+} // namespace HWMocker
+
+#endif // __HWMOCKER_HWIRQ_HPP

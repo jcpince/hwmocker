@@ -20,10 +20,53 @@
  * SOFTWARE.
  */
 
-#ifndef __HWMOCKER_CONFIG__H__
-#define __HWMOCKER_CONFIG__H__
+#ifndef __HWMOCKER_PIN_HPP
+#define __HWMOCKER_PIN_HPP
 
-#cmakedefine CONFIG_HWMOCK_SPI 1
-#cmakedefine CONFIG_HWMOCK_TESTS 1
+namespace HWMocker {
 
-#endif /* __HWMOCKER_CONFIG__H__ */
+///
+/// class Pin
+
+class Pin {
+  public:
+    // Constructors/Destructors
+
+    ///
+    /// Empty Constructor
+    Pin(unsigned int pin_idx);
+
+    ///
+    /// Empty Destructor
+    virtual ~Pin();
+
+    // Static Public attributes
+
+    // Public attributes
+
+    // Public static attribute accessor methods
+
+    // Public attribute accessor methods
+
+  protected:
+    // Static Protected attributes
+
+    // Protected attributes
+    unsigned int pin_idx;
+
+    // Public static attribute accessor methods
+
+    // Public attribute accessor methods
+
+  private:
+    // Static Private attributes
+
+    // Private attributes
+
+    // Public static attribute accessor methods
+
+    // Public attribute accessor methods
+};
+} // namespace HWMocker
+
+#endif // __HWMOCKER_PIN_HPP

@@ -20,8 +20,11 @@
  * SOFTWARE.
  */
 
+#include <System.hpp>
 #include <hwmocker/hwmocker.h>
 #include <hwmocker/irq.h>
+
+using namespace HWMocker;
 
 #include <hwmocker_internal.h>
 
@@ -38,6 +41,11 @@ struct hwmocker *hwmocker_create(const char *hwmcnf) {
     struct hwmocker *mocker = (struct hwmocker *)calloc(1, sizeof(struct hwmocker));
     if (!mocker)
         return mocker;
+
+    System *s = new System(hwmcnf);
+    delete s;
+    free(mocker);
+    return NULL;
 
     std::filesystem::path cwd = std::filesystem::current_path();
     mocker->hwmcnf = hwmcnf;

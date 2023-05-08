@@ -20,10 +20,25 @@
  * SOFTWARE.
  */
 
-#ifndef __HWMOCKER_CONFIG__H__
-#define __HWMOCKER_CONFIG__H__
+#ifndef __HWMOCKER_GENERIC_IRQ_HPP__
+#define __HWMOCKER_GENERIC_IRQ_HPP__
 
-#cmakedefine CONFIG_HWMOCK_SPI 1
-#cmakedefine CONFIG_HWMOCK_TESTS 1
+#include <vector>
 
-#endif /* __HWMOCKER_CONFIG__H__ */
+namespace HWMocker {
+
+///
+/// class GenericIrq
+
+class GenericIrq {
+  protected:
+    /// Raise qn irq on the destination Hw element
+    virtual void raise() = 0;
+
+    /// Handle a new irq
+    /// @return int
+    virtual int handle() = 0;
+};
+} // namespace HWMocker
+
+#endif /* __HWMOCKER_GENERIC_IRQ_HPP__ */

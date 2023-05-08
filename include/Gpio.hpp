@@ -20,10 +20,51 @@
  * SOFTWARE.
  */
 
-#ifndef __HWMOCKER_CONFIG__H__
-#define __HWMOCKER_CONFIG__H__
+#ifndef __HWMOCKER_GPIO_HPP
+#define __HWMOCKER_GPIO_HPP
 
-#cmakedefine CONFIG_HWMOCK_SPI 1
-#cmakedefine CONFIG_HWMOCK_TESTS 1
+#include "Pin.hpp"
 
-#endif /* __HWMOCKER_CONFIG__H__ */
+namespace HWMocker {
+
+///
+/// class Gpio
+
+class Gpio : public Pin {
+  public:
+    // Constructors/Destructors
+
+    ///
+    /// Empty Constructor
+    Gpio(unsigned int pin_idx);
+
+    ///
+    /// Empty Destructor
+    virtual ~Gpio();
+
+    // Static Public attributes
+
+    // Public attributes
+
+    // Public static attribute accessor methods
+
+    // Public attribute accessor methods
+
+    ///
+    /// @param  value
+    void set_value(bool value) {
+        if (!input)
+            level = value;
+    }
+
+    ///
+    /// @return bool
+    bool get_value() { return level; }
+
+  private:
+    bool level;
+    bool input;
+};
+} // namespace HWMocker
+
+#endif // __HWMOCKER_GPIO_HPP
