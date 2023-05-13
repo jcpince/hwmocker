@@ -4,9 +4,8 @@ project(hwmocker)
 
 add_compile_options(-include ${CMAKE_BINARY_DIR}/generated/hwmocker/config.h)
 
-include_directories(include
-    ${CMAKE_SOURCE_DIR}/include/C-API
-    ${CMAKE_BINARY_DIR}/generated)
+include_directories(include ${CMAKE_SOURCE_DIR}/include/C-API
+                    ${CMAKE_BINARY_DIR}/generated)
 
 include(cmake/config.cmake)
 include(cmake/helpers.cmake)
