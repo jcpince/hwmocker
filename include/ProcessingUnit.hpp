@@ -46,6 +46,8 @@ class ProcessingUnit : virtual public HwElement {
 
     int load_config(json config);
 
+    HWMocker::Pin *get_pin(unsigned int pin_idx);
+
   private:
     // Static Private attributes
 

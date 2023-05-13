@@ -47,16 +47,6 @@ struct hwmocker *hwmocker_create(const char *hwmcnf) {
     free(mocker);
     return NULL;
 
-    std::filesystem::path cwd = std::filesystem::current_path();
-    mocker->hwmcnf = hwmcnf;
-    std::ifstream f(hwmcnf);
-    if (!f) {
-        free(mocker);
-        return NULL;
-    }
-
-    mocker->config = json::parse(f);
-
 #ifdef CONFIG_HWMOCK_IRQ
     mocker->device.irq_handler = hwmocker_irq_handler_create(mocker, 1);
     if (!mocker->device.irq_handler)

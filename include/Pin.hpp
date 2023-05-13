@@ -23,6 +23,8 @@
 #ifndef __HWMOCKER_PIN_HPP
 #define __HWMOCKER_PIN_HPP
 
+#include <vector>
+
 namespace HWMocker {
 
 ///
@@ -43,16 +45,18 @@ class Pin {
     // Static Public attributes
 
     // Public attributes
+    unsigned int pin_idx;
 
     // Public static attribute accessor methods
 
     // Public attribute accessor methods
+    void connect(Pin *pin);
 
   protected:
     // Static Protected attributes
 
     // Protected attributes
-    unsigned int pin_idx;
+    std::vector<Pin *> connected_pins;
 
     // Public static attribute accessor methods
 

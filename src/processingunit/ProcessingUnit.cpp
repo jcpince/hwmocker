@@ -27,3 +27,12 @@ int HWMocker::ProcessingUnit::load_config(json config) {
 
     return 0;
 }
+
+HWMocker::Pin *HWMocker::ProcessingUnit::get_pin(unsigned int pin_idx) {
+    for (HWMocker::Gpio *gpio : gpios) {
+        if (gpio->pin_idx == pin_idx)
+            return gpio;
+    }
+    // Not found, checks the devices pins
+    return nullptr;
+}

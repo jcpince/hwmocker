@@ -20,7 +20,7 @@
               "irq": 100
             }
         },
-        "pin-connections": [
+        "host-soc-pin-connections": [
             "101:1",
             "102:2",
             "103:3",
