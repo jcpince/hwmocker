@@ -41,7 +41,7 @@ class System : virtual public HwElement {
   private:
     HWMocker::ProcessingUnit *soc = nullptr;
     HWMocker::ProcessingUnit *host = nullptr;
-    HWMocker::GpioController gpio_controller;
+    HWMocker::IrqController gpio_controller;
     std::vector<HWMocker::HwElement> hw_elements;
 
     int load_config(json config);
@@ -69,12 +69,12 @@ class System : virtual public HwElement {
     ///
     /// Set the value of gpio_controller
     /// @param value the new value of gpio_controller
-    void setGpio_controller(HWMocker::GpioController value) { gpio_controller = value; }
+    void setIrq_controller(HWMocker::IrqController value) { gpio_controller = value; }
 
     ///
     /// Get the value of gpio_controller
     /// @return the value of gpio_controller
-    HWMocker::GpioController getGpio_controller() { return gpio_controller; }
+    HWMocker::IrqController getIrq_controller() { return gpio_controller; }
 };
 } // namespace HWMocker
 

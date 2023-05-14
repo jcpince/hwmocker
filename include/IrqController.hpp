@@ -20,27 +20,27 @@
  * SOFTWARE.
  */
 
-#ifndef __HWMOCKER_GPIOCONTROLLER_HPP
-#define __HWMOCKER_GPIOCONTROLLER_HPP
+#ifndef __HWMOCKER_IRQCONTROLLER_HPP
+#define __HWMOCKER_IRQCONTROLLER_HPP
 
 #include <vector>
 
 namespace HWMocker {
 
 ///
-/// class GpioController
+/// class IrqController
 
-class GpioController {
+class IrqController {
   public:
     // Constructors/Destructors
 
     ///
     /// Empty Constructor
-    GpioController();
+    IrqController();
 
     ///
     /// Empty Destructor
-    virtual ~GpioController();
+    virtual ~IrqController();
 
     // Static Public attributes
 
@@ -70,4 +70,4 @@ class GpioController {
 };
 } // namespace HWMocker
 
-#endif // __HWMOCKER_GPIOCONTROLLER_HPP
+#endif // __HWMOCKER_IRQCONTROLLER_HPP

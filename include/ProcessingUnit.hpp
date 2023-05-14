@@ -23,9 +23,9 @@
 #ifndef __HWMOCKER_PROCESSINGUNIT_HPP
 #define __HWMOCKER_PROCESSINGUNIT_HPP
 
-#include "Gpio.hpp"
-#include "GpioController.hpp"
 #include "HwElement.hpp"
+#include "Irq.hpp"
+#include "IrqController.hpp"
 
 #include <vector>
 
@@ -53,8 +53,8 @@ class ProcessingUnit : virtual public HwElement {
 
     // Private attributes
 
-    HWMocker::GpioController gpio_controller;
-    std::vector<HWMocker::Gpio *> gpios;
+    HWMocker::IrqController gpio_controller;
+    std::vector<HWMocker::Irq *> gpios;
 
     // Public static attribute accessor methods
 
@@ -63,12 +63,12 @@ class ProcessingUnit : virtual public HwElement {
     ///
     /// Set the value of gpio_controller
     /// @param value the new value of gpio_controller
-    void setGpio_controller(HWMocker::GpioController value) { gpio_controller = value; }
+    void setIrq_controller(HWMocker::IrqController value) { gpio_controller = value; }
 
     ///
     /// Get the value of gpio_controller
     /// @return the value of gpio_controller
-    HWMocker::GpioController getGpio_controller() { return gpio_controller; }
+    HWMocker::IrqController getIrq_controller() { return gpio_controller; }
 };
 } // namespace HWMocker
 

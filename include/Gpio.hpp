@@ -20,27 +20,27 @@
  * SOFTWARE.
  */
 
-#ifndef __HWMOCKER_GPIO_HPP
-#define __HWMOCKER_GPIO_HPP
+#ifndef __HWMOCKER_IRQ_HPP
+#define __HWMOCKER_IRQ_HPP
 
 #include "Pin.hpp"
 
 namespace HWMocker {
 
 ///
-/// class Gpio
+/// class Irq
 
-class Gpio : public Pin {
+class Irq : public Pin {
   public:
     // Constructors/Destructors
 
     ///
     /// Empty Constructor
-    Gpio(unsigned int pin_idx);
+    Irq(unsigned int pin_idx);
 
     ///
     /// Empty Destructor
-    virtual ~Gpio();
+    virtual ~Irq();
 
     // Static Public attributes
 
@@ -67,4 +67,4 @@ class Gpio : public Pin {
 };
 } // namespace HWMocker
 
-#endif // __HWMOCKER_GPIO_HPP
+#endif // __HWMOCKER_IRQ_HPP

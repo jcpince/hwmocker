@@ -23,8 +23,8 @@
 #ifndef __HWMOCKER_SPIDEVICE_HPP
 #define __HWMOCKER_SPIDEVICE_HPP
 
-#include "Gpio.hpp"
 #include "HwElement.hpp"
+#include "Irq.hpp"
 #include "Pin.hpp"
 
 namespace HWMocker {
@@ -94,7 +94,7 @@ class SpiDevice : virtual public HwElement {
     HWMocker::Pin *miso;
     HWMocker::Pin *mosi;
     HWMocker::Pin *clk;
-    HWMocker::Gpio *csn;
+    HWMocker::Irq *csn;
 
     // Public static attribute accessor methods
 
@@ -133,12 +133,12 @@ class SpiDevice : virtual public HwElement {
     ///
     /// Set the value of csn
     /// @param value the new value of csn
-    void setCsn(HWMocker::Gpio *value) { csn = value; }
+    void setCsn(HWMocker::Irq *value) { csn = value; }
 
     ///
     /// Get the value of csn
     /// @return the value of csn
-    HWMocker::Gpio *getCsn() { return csn; }
+    HWMocker::Irq *getCsn() { return csn; }
 };
 } // namespace HWMocker
 

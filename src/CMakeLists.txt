@@ -1,9 +1,9 @@
 add_library(
   hwmocker
   hwmocker.cpp
-  gpio/GpioController.cpp
   gpio/Gpio.cpp
   gpio/GpioIrq.cpp
+  irq/IrqController.cpp
   irq/HwIrq.cpp
   pin/Pin.cpp
   processingunit/ProcessingUnit.cpp
