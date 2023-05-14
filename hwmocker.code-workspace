@@ -7,7 +7,10 @@
 	"settings": {
 		"files.associations": {
 			"hwmocker.h": "c",
-			"*.hwmcnf": "json"
+			"*.hwmcnf": "json",
+			"stdexcept": "cpp",
+			"*.in": "cpp",
+			"string": "cpp"
 		}
 	}
 }
