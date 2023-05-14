@@ -2,6 +2,9 @@ cmake_minimum_required(VERSION 3.22)
 
 project(hwmocker)
 
+add_compile_options(-fsanitize=address)
+add_link_options(-fsanitize=address)
+
 add_compile_options(-include ${CMAKE_BINARY_DIR}/generated/hwmocker/config.h)
 
 include_directories(include ${CMAKE_SOURCE_DIR}/include/C-API
