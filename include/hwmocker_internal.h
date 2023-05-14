@@ -23,14 +23,17 @@
 #ifndef __HWMOCKER_INTERNAL_H__
 #define __HWMOCKER_INTERNAL_H__
 
-#include <hwmocker/hwmocker.h>
-
 #include <System.hpp>
+
+#include <string>
 
 using namespace HWMocker;
 
 struct hwmocker {
     System *system;
 };
+
+std::string get_stacktrace_str(unsigned int max_frames);
+void print_stacktrace(FILE *out, unsigned int max_frames);
 
 #endif /* __HWMOCKER_INTERNAL_H__ */

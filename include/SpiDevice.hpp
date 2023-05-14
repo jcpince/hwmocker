@@ -55,14 +55,14 @@ class SpiDevice : virtual public HwElement {
     ///
     /// @return int
     /// @param  json_cfg
-    int load_config(const char *json_cfg) { return 0; }
+    int load_config(json config);
 
     ///
     /// @return int
     /// @param  txbuf
     /// @param  rxbuf
     /// @param  size
-    int sync_xfer(void *txbuf, void *rxbuf, size_t size) { return 0; }
+    int sync_xfer(void *txbuf, void *rxbuf, size_t size);
 
     ///
     /// @return int
@@ -71,9 +71,7 @@ class SpiDevice : virtual public HwElement {
     /// @param  size
     /// @param  _callback_ctx_void_
     /// @param  ctx
-    int async_xfer(void *txbuf, void *rxbuf, size_t size, int _callback_ctx_void_, void *ctx) {
-        return 0;
-    }
+    int async_xfer(void *txbuf, void *rxbuf, size_t size, int _callback_ctx_void_, void *ctx);
 
     static bool config_has_device(json config) { return config.contains("spi"); }
 

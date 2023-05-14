@@ -64,13 +64,15 @@ int host_main(void *priv) {
 #endif
 
 int soc_main(void *priv) {
-    printf("%s called\n", __func__);
+    printf("%s(%p) called\n", __func__, priv);
     sleep(1);
+    return 0;
 }
 
 int host_main(void *priv) {
-    printf("%s called\n", __func__);
+    printf("%s(%p) called\n", __func__, priv);
     sleep(1);
+    return 0;
 }
 
 int main(int argc, char **argv) {

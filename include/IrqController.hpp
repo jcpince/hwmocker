@@ -27,7 +27,6 @@
 
 #include <cstring>
 #include <set>
-#include <stdexcept>
 #include <string>
 
 #include <errno.h>
@@ -38,7 +37,6 @@ namespace HWMocker {
 
 ///
 /// class IrqController
-
 class IrqController {
   public:
     // Constructors/Destructors
@@ -64,13 +62,7 @@ class IrqController {
     /// @return int
     int handle();
 
-    void set_dest_irq_controller(IrqController *dest_controller) {
-        if (this->dest_controller) {
-            throw std::runtime_error(
-                "set_dest_irq_controller failed: dest irq controller already set");
-        }
-        this->dest_controller = dest_controller;
-    }
+    void set_dest_irq_controller(IrqController *dest_controller);
 
   private:
     bool allirqs_enabled;

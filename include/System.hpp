@@ -37,7 +37,7 @@ class System : virtual public HwElement {
   public:
     System(const char *hwmcnf, int (*host_main)(void *), void *host_arg, int (*soc_main)(void *),
            void *soc_arg);
-    ~System();
+    virtual ~System();
     int start();
     void stop();
     void wait();

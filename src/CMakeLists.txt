@@ -10,3 +10,5 @@ add_library(
   system/System.cpp)
 
 add_subdirectory_ifdef(CONFIG_HWMOCK_SPI spi)
+
+set_property(TARGET hwmocker PROPERTY CXX_STANDARD 23)

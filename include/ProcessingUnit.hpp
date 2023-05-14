@@ -80,7 +80,7 @@ class ProcessingUnit : virtual public HwElement {
     IrqController *irq_controller = nullptr;
     pthread_t pthread = {0};
     std::vector<Gpio *> gpios;
-    pthread_mutex_t start_mutex = {0};
+    pthread_mutex_t start_mutex;
     bool stopped = true;
     int (*main_func)(void *data) = nullptr;
     void *main_arg = nullptr;

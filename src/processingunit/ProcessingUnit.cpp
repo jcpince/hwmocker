@@ -3,7 +3,10 @@
 #include "SpiDevice.hpp"
 #endif
 
+#include <hwmocker_internal.h>
+
 #include <iostream>
+#include <sstream>
 #include <stdexcept>
 #include <string>
 
@@ -16,21 +19,38 @@ ProcessingUnit::ProcessingUnit(const char *name) : name(name) {
 
     irq_controller = new IrqController();
     if (!irq_controller) {
-        throw std::runtime_error("Could not allocate irq controller");
+        stringstream reason;
+        reason << "Could not allocate irq controller" << endl << get_stacktrace_str(64) << endl;
+        throw new runtime_error(reason.str());
     }
 
+    memset(&start_mutex, 0, sizeof(start_mutex));
     rc = pthread_mutex_lock(&start_mutex);
-    if (rc)
-        throw std::runtime_error(string("pthread_mutex_lock(start_mutex) failed with ") +
-                                 strerror(rc));
+    if (rc) {
+        delete irq_controller;
+        stringstream reason;
+        reason << "pthread_mutex_lock(start_mutex) failed with " << strerror(rc) << endl
+               << get_stacktrace_str(64) << endl;
+        throw new runtime_error(reason.str());
+    }
 
     rc = pthread_create(&pthread, NULL, processing_unit_thread_fn, this);
-    if (rc)
-        throw std::runtime_error(string("pthread_create failed with ") + strerror(rc));
+    if (rc) {
+        delete irq_controller;
+        stringstream reason;
+        reason << "pthread_create failed with " << strerror(rc) << endl
+               << get_stacktrace_str(64) << endl;
+        throw new runtime_error(reason.str());
+    }
 
     rc = pthread_setname_np(pthread, name);
-    if (rc)
-        throw std::runtime_error(string("pthread_setname_np failed with ") + strerror(rc));
+    if (rc) {
+        delete irq_controller;
+        stringstream reason;
+        reason << "pthread_setname_np failed with " << strerror(rc) << endl
+               << get_stacktrace_str(64) << endl;
+        throw new runtime_error(reason.str());
+    }
 }
 
 ProcessingUnit::~ProcessingUnit() {
@@ -87,17 +107,23 @@ int ProcessingUnit::run_thread() {
 
     // Wait for the start to be called
     int rc = pthread_mutex_lock(&start_mutex);
-    if (rc)
-        throw std::runtime_error(string("pthread_mutex_lock(start_mutex) failed with ") +
-                                 strerror(rc));
+    if (rc) {
+        stringstream reason;
+        reason << "pthread_mutex_lock(start_mutex) failed with " << strerror(rc) << endl
+               << get_stacktrace_str(64) << endl;
+        throw new runtime_error(reason.str());
+    }
 
     if (stopped) {
         printf("%s(%s) started but stopped\n", __func__, name);
         return 0;
     }
 
-    if (!main_func)
-        throw std::runtime_error(string("main function not set yet"));
+    if (!main_func) {
+        stringstream reason;
+        reason << "main function not set yet" << endl << get_stacktrace_str(64) << endl;
+        throw new runtime_error(reason.str());
+    }
 
     printf("%s(%s) starting\n", __func__, name);
     return main_func(main_arg);

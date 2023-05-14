@@ -62,8 +62,8 @@ class Gpio : public Pin {
     bool get_value() { return level; }
 
   private:
-    bool level;
     bool input;
+    bool level;
 };
 } // namespace HWMocker
 
