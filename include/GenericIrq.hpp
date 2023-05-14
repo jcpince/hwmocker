@@ -23,19 +23,19 @@
 #ifndef __HWMOCKER_GENERIC_IRQ_HPP__
 #define __HWMOCKER_GENERIC_IRQ_HPP__
 
-#include <vector>
-
 namespace HWMocker {
 
 ///
 /// class GenericIrq
 
 class GenericIrq {
-  protected:
-    /// Raise qn irq on the destination Hw element
-    virtual void raise() = 0;
+  public:
+    virtual void enable() = 0;
+    virtual void disable() = 0;
 
-    /// Handle a new irq
+    virtual bool enabled() = 0;
+
+    /// Handle the irq
     /// @return int
     virtual int handle() = 0;
 };

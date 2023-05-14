@@ -25,5 +25,6 @@
 
 #cmakedefine CONFIG_HWMOCK_SPI 1
 #cmakedefine CONFIG_HWMOCK_TESTS 1
+#define HWMOCK_IRQ_SIGNUM @CONFIG_HWMOCK_IRQ_SIGNUM@
 
 #endif /* __HWMOCKER_CONFIG__H__ */

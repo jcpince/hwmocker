@@ -23,52 +23,72 @@
 #ifndef __HWMOCKER_PROCESSINGUNIT_HPP
 #define __HWMOCKER_PROCESSINGUNIT_HPP
 
+#include "Gpio.hpp"
 #include "HwElement.hpp"
-#include "Irq.hpp"
 #include "IrqController.hpp"
 
 #include <vector>
 
+#include <pthread.h>
+
 namespace HWMocker {
+
+void *processing_unit_thread_fn(void *data);
 
 ///
 /// class ProcessingUnit
-
 class ProcessingUnit : virtual public HwElement {
+
+    friend void *processing_unit_thread_fn(void *data);
+
   public:
     ///
     /// Empty Constructor
-    ProcessingUnit();
+    ProcessingUnit(const char *name);
 
     ///
     /// Empty Destructor
     virtual ~ProcessingUnit();
 
+    void start();
+    void stop();
+    void wait() { pthread_join(pthread, NULL); }
+
     int load_config(json config);
 
-    HWMocker::Pin *get_pin(unsigned int pin_idx);
+    Pin *get_pin(unsigned int pin_idx);
+
+    bool is_stopped() { return stopped; }
+
+    void set_main_function(int (*main_func)(void *data)) { this->main_func = main_func; }
+
+    void set_main_arg(void *main_arg) { this->main_arg = main_arg; }
+
+    void set_dest_processing_unit(ProcessingUnit *dest_processing_unit) {
+        this->dest_processing_unit = dest_processing_unit;
+        irq_controller->set_dest_irq_controller(dest_processing_unit->get_irq_controller());
+    }
+
+    IrqController *get_irq_controller() { return irq_controller; }
 
   private:
     // Static Private attributes
 
     // Private attributes
-
-    HWMocker::IrqController gpio_controller;
-    std::vector<HWMocker::Irq *> gpios;
+    const char *name;
+    ProcessingUnit *dest_processing_unit = nullptr;
+    IrqController *irq_controller = nullptr;
+    pthread_t pthread = {0};
+    std::vector<Gpio *> gpios;
+    pthread_mutex_t start_mutex = {0};
+    bool stopped = true;
+    int (*main_func)(void *data) = nullptr;
+    void *main_arg = nullptr;
 
     // Public static attribute accessor methods
 
     // Public attribute accessor methods
-
-    ///
-    /// Set the value of gpio_controller
-    /// @param value the new value of gpio_controller
-    void setIrq_controller(HWMocker::IrqController value) { gpio_controller = value; }
-
-    ///
-    /// Get the value of gpio_controller
-    /// @return the value of gpio_controller
-    HWMocker::IrqController getIrq_controller() { return gpio_controller; }
+    int run_thread();
 };
 } // namespace HWMocker
 

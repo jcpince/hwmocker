@@ -35,21 +35,19 @@ namespace HWMocker {
 
 class System : virtual public HwElement {
   public:
-    System(const char *hwmcnf);
+    System(const char *hwmcnf, int (*host_main)(void *), void *host_arg, int (*soc_main)(void *),
+           void *soc_arg);
     ~System();
+    int start();
+    void stop();
+    void wait();
 
   private:
     HWMocker::ProcessingUnit *soc = nullptr;
     HWMocker::ProcessingUnit *host = nullptr;
-    HWMocker::IrqController gpio_controller;
     std::vector<HWMocker::HwElement> hw_elements;
 
     int load_config(json config);
-
-    ///
-    /// Set the value of soc
-    /// @param value the new value of soc
-    void setSoc(HWMocker::ProcessingUnit *soc) { this->soc = soc; }
 
     ///
     /// Get the value of soc
@@ -57,24 +55,9 @@ class System : virtual public HwElement {
     HWMocker::ProcessingUnit *getSoc() { return soc; }
 
     ///
-    /// Set the value of host
-    /// @param value the new value of host
-    void setHost(HWMocker::ProcessingUnit *host) { this->host = host; }
-
-    ///
     /// Get the value of host
     /// @return the value of host
     HWMocker::ProcessingUnit *getHost() { return host; }
-
-    ///
-    /// Set the value of gpio_controller
-    /// @param value the new value of gpio_controller
-    void setIrq_controller(HWMocker::IrqController value) { gpio_controller = value; }
-
-    ///
-    /// Get the value of gpio_controller
-    /// @return the value of gpio_controller
-    HWMocker::IrqController getIrq_controller() { return gpio_controller; }
 };
 } // namespace HWMocker
 

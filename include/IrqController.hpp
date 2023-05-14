@@ -23,7 +23,16 @@
 #ifndef __HWMOCKER_IRQCONTROLLER_HPP
 #define __HWMOCKER_IRQCONTROLLER_HPP
 
-#include <vector>
+#include "GenericIrq.hpp"
+
+#include <cstring>
+#include <set>
+#include <stdexcept>
+#include <string>
+
+#include <errno.h>
+#include <pthread.h>
+#include <signal.h>
 
 namespace HWMocker {
 
@@ -42,31 +51,36 @@ class IrqController {
     /// Empty Destructor
     virtual ~IrqController();
 
-    // Static Public attributes
+    void start();
+    void disableIrq(GenericIrq *irq);
+    void enableIrq(GenericIrq *irq);
+    void disableIrqs();
+    void enableIrqs();
 
-    // Public attributes
+    /// Raise qn irq on the destination Hw element
+    void raise(GenericIrq *irq);
 
-    // Public static attribute accessor methods
+    /// Handle the pending irqs
+    /// @return int
+    int handle();
 
-    // Public attribute accessor methods
-
-  protected:
-    // Static Protected attributes
-
-    // Protected attributes
-
-    // Public static attribute accessor methods
-
-    // Public attribute accessor methods
+    void set_dest_irq_controller(IrqController *dest_controller) {
+        if (this->dest_controller) {
+            throw std::runtime_error(
+                "set_dest_irq_controller failed: dest irq controller already set");
+        }
+        this->dest_controller = dest_controller;
+    }
 
   private:
-    // Static Private attributes
+    bool allirqs_enabled;
+    std::set<GenericIrq *> pending_irqs;
+    struct sigaction action;
+    pthread_t pthread = {0};
+    IrqController *dest_controller = nullptr;
 
-    // Private attributes
-
-    // Public static attribute accessor methods
-
-    // Public attribute accessor methods
+    void interrupt_self();
+    void interrupt_dest();
 };
 } // namespace HWMocker
 

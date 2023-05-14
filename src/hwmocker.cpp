@@ -31,89 +31,29 @@ using namespace HWMocker;
 #include <signal.h>
 #include <stdlib.h>
 
-static void *device_thread_fn(void *data);
-static void *host_thread_fn(void *data);
-
-//#include <iostream>
 #include <fstream>
 
-struct hwmocker *hwmocker_create(const char *hwmcnf) {
+struct hwmocker *hwmocker_create(const char *hwmcnf, int (*host_main)(void *), void *host_arg,
+                                 int (*soc_main)(void *), void *soc_arg) {
     struct hwmocker *mocker = (struct hwmocker *)calloc(1, sizeof(struct hwmocker));
     if (!mocker)
         return mocker;
 
-    System *s = new System(hwmcnf);
-    delete s;
-    free(mocker);
-    return NULL;
-
-#ifdef CONFIG_HWMOCK_IRQ
-    mocker->device.irq_handler = hwmocker_irq_handler_create(mocker, 1);
-    if (!mocker->device.irq_handler)
-        goto failure;
-
-    mocker->host.irq_handler = hwmocker_irq_handler_create(mocker, 0);
-    if (!mocker->host.irq_handler)
-        goto failure;
-#endif
-
-    mocker->device.mocker = mocker;
-    mocker->host.mocker = mocker;
-
+    mocker->system = new System(hwmcnf, host_main, host_arg, soc_main, soc_arg);
+    if (!mocker->system) {
+        free(mocker);
+        mocker = NULL;
+    }
     return mocker;
-
-failure:
-    hwmocker_destroy(mocker);
-    return NULL;
 }
 
 void hwmocker_destroy(struct hwmocker *mocker) {
-    if (mocker->device.irq_handler)
-        hwmocker_irq_handler_destroy(mocker->device.irq_handler);
-    if (mocker->host.irq_handler)
-        hwmocker_irq_handler_destroy(mocker->host.irq_handler);
+    delete mocker->system;
     free(mocker);
 }
 
-struct hwmocker_device *hwmocker_get_device(struct hwmocker *mocker) {
-    return &mocker->device;
-}
+int hwmocker_start(struct hwmocker *mocker) { return mocker->system->start(); }
 
-struct hwmocker_host *hwmocker_get_host(struct hwmocker *mocker) {
-    return &mocker->host;
-}
+void hwmocker_stop(struct hwmocker *mocker) { mocker->system->stop(); }
 
-static void *device_thread_fn(void *data) {
-    struct hwmocker_device *device = (struct hwmocker_device *)data;
-    device->main_function(device->priv);
-    return NULL;
-}
-
-static void *host_thread_fn(void *data) {
-    struct hwmocker_host *host = (struct hwmocker_host *)data;
-    host->main_function(host->priv);
-    return NULL;
-}
-
-int hwmocker_start(struct hwmocker *mocker) {
-    int rc;
-    rc = pthread_create(&mocker->device_thread, NULL, device_thread_fn, &mocker->device);
-    if (rc)
-        return rc;
-    rc = pthread_create(&mocker->host_thread, NULL, host_thread_fn, &mocker->host);
-    if (rc) {
-        pthread_kill(mocker->device_thread, SIGKILL);
-        return rc;
-    }
-    return 0;
-}
-
-void hwmocker_stop(struct hwmocker *mocker) {
-    pthread_kill(mocker->device_thread, SIGKILL);
-    pthread_kill(mocker->host_thread, SIGKILL);
-}
-
-void hwmocker_wait(struct hwmocker *mocker) {
-    pthread_join(mocker->device_thread, NULL);
-    pthread_join(mocker->host_thread, NULL);
-}
+void hwmocker_wait(struct hwmocker *mocker) { mocker->system->wait(); }

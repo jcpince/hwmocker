@@ -1,8 +1,9 @@
 #include <hwmocker/hwmocker.h>
 #include <hwmocker/irq.h>
-#include <stdio.h>
 
 #include <errno.h>
+#include <stdio.h>
+#include <unistd.h>
 
 #define DEVICE_IRQ_NUMBER 17
 #define HOST_IRQ_NUMBER 42
@@ -62,10 +63,21 @@ int host_main(void *priv) {
 }
 #endif
 
+int soc_main(void *priv) {
+    printf("%s called\n", __func__);
+    sleep(1);
+}
+
+int host_main(void *priv) {
+    printf("%s called\n", __func__);
+    sleep(1);
+}
+
 int main(int argc, char **argv) {
     // struct device_data device_data;
     // struct host_data host_data;
     struct hwmocker *mocker;
+    int rc;
 
     if (argc != 2) {
         fprintf(stderr, "No config file given\n");
@@ -73,27 +85,19 @@ int main(int argc, char **argv) {
         return -EINVAL;
     }
 
-    mocker = hwmocker_create(argv[1]);
+    mocker = hwmocker_create(argv[1], host_main, NULL, soc_main, NULL);
     if (!mocker)
         return -ENOMEM;
 
-    /*struct hwmocker_device *device = hwmocker_get_device(mocker);
-    struct hwmocker_host *host = hwmocker_get_host(mocker);
+    rc = hwmocker_start(mocker);
+    printf("hwmocker_start returned %d\n", rc);
 
-    device->main_function = device_main;
-    device->priv = &device_data;
-
-    host->main_function = host_main;
-    host->priv = &host_data;
-
-    device_data.mocker = mocker;
-    device_data.device = device;
-    host_data.mocker = mocker;
-    host_data.host = host;
-
-    hwmocker_start(mocker);
-
+    printf("hwmocker waiting for system to exit...\n");
     hwmocker_wait(mocker);
-    hwmocker_destroy(mocker);*/
+
+    printf("hwmocker cleaning up...\n");
+    hwmocker_destroy(mocker);
+
+    printf("That's all folks!!!\n");
     return 0;
 }

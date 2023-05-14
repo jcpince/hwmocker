@@ -32,22 +32,8 @@ extern "C" {
 
 struct hwmocker;
 
-struct hwmocker_device {
-    struct hwmocker *mocker;
-    struct hwmocker_irq_handler *irq_handler;
-    void *priv;
-    int (*main_function)(void *priv);
-    volatile int stopped;
-};
-
-struct hwmocker_host {
-    struct hwmocker *mocker;
-    struct hwmocker_irq_handler *irq_handler;
-    void *priv;
-    int (*main_function)(void *priv);
-};
-
-struct hwmocker *hwmocker_create(const char *hwmcnf);
+struct hwmocker *hwmocker_create(const char *hwmcnf, int (*host_main)(void *), void *host_arg,
+                                 int (*soc_main)(void *), void *soc_arg);
 void hwmocker_destroy(struct hwmocker *mocker);
 
 struct hwmocker_device *hwmocker_get_device(struct hwmocker *mocker);

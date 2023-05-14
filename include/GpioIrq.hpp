@@ -20,28 +20,28 @@
  * SOFTWARE.
  */
 
-#ifndef __HWMOCKER_IRQIRQ_HPP
-#define __HWMOCKER_IRQIRQ_HPP
+#ifndef __HWMOCKER_GpioIrq_HPP
+#define __HWMOCKER_GpioIrq_HPP
 
 #include "GenericIrq.hpp"
-#include "Irq.hpp"
+#include "Gpio.hpp"
 
 namespace HWMocker {
 
 ///
-/// class IrqIrq
+/// class GpioIrq
 
-class IrqIrq : public Irq, virtual public GenericIrq {
+class GpioIrq : public Gpio, virtual public GenericIrq {
   public:
     // Constructors/Destructors
 
     ///
     /// Empty Constructor
-    IrqIrq();
+    GpioIrq();
 
     ///
     /// Empty Destructor
-    virtual ~IrqIrq();
+    virtual ~GpioIrq();
 
     // Static Public attributes
 
@@ -71,4 +71,4 @@ class IrqIrq : public Irq, virtual public GenericIrq {
 };
 } // namespace HWMocker
 
-#endif // __HWMOCKER_IRQIRQ_HPP
+#endif // __HWMOCKER_GpioIrq_HPP

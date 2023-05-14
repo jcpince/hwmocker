@@ -25,20 +25,12 @@
 
 #include <hwmocker/hwmocker.h>
 
-#include <nlohmann/json.hpp>
-#include <pthread.h>
+#include <System.hpp>
 
-using json = nlohmann::json;
-
-struct hwmocker_irq_handler;
+using namespace HWMocker;
 
 struct hwmocker {
-    struct hwmocker_device device;
-    struct hwmocker_host host;
-    pthread_t device_thread;
-    pthread_t host_thread;
-    json config;
-    const char *hwmcnf;
+    System *system;
 };
 
 #endif /* __HWMOCKER_INTERNAL_H__ */

@@ -23,8 +23,8 @@
 #ifndef __HWMOCKER_SPIDEVICE_HPP
 #define __HWMOCKER_SPIDEVICE_HPP
 
+#include "Gpio.hpp"
 #include "HwElement.hpp"
-#include "Irq.hpp"
 #include "Pin.hpp"
 
 namespace HWMocker {
@@ -91,10 +91,10 @@ class SpiDevice : virtual public HwElement {
 
     // Private attributes
 
-    HWMocker::Pin *miso;
-    HWMocker::Pin *mosi;
-    HWMocker::Pin *clk;
-    HWMocker::Irq *csn;
+    Pin *miso;
+    Pin *mosi;
+    Pin *clk;
+    Gpio *csn;
 
     // Public static attribute accessor methods
 
@@ -103,42 +103,42 @@ class SpiDevice : virtual public HwElement {
     ///
     /// Set the value of miso
     /// @param value the new value of miso
-    void setMiso(HWMocker::Pin *value) { miso = value; }
+    void setMiso(Pin *value) { miso = value; }
 
     ///
     /// Get the value of miso
     /// @return the value of miso
-    HWMocker::Pin *getMiso() { return miso; }
+    Pin *getMiso() { return miso; }
 
     ///
     /// Set the value of mosi
     /// @param value the new value of mosi
-    void setMosi(HWMocker::Pin *value) { mosi = value; }
+    void setMosi(Pin *value) { mosi = value; }
 
     ///
     /// Get the value of mosi
     /// @return the value of mosi
-    HWMocker::Pin *getMosi() { return mosi; }
+    Pin *getMosi() { return mosi; }
 
     ///
     /// Set the value of clk
     /// @param value the new value of clk
-    void setClk(HWMocker::Pin *value) { clk = value; }
+    void setClk(Pin *value) { clk = value; }
 
     ///
     /// Get the value of clk
     /// @return the value of clk
-    HWMocker::Pin *getClk() { return clk; }
+    Pin *getClk() { return clk; }
 
     ///
     /// Set the value of csn
     /// @param value the new value of csn
-    void setCsn(HWMocker::Irq *value) { csn = value; }
+    void setCsn(Gpio *value) { csn = value; }
 
     ///
     /// Get the value of csn
     /// @return the value of csn
-    HWMocker::Irq *getCsn() { return csn; }
+    Gpio *getCsn() { return csn; }
 };
 } // namespace HWMocker
 
