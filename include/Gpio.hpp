@@ -53,17 +53,21 @@ class Gpio : public Pin {
     ///
     /// @param  value
     void set_value(bool value) {
-        if (!input)
+        /*if (!input)*/ {
             level = value;
+            change(value);
+        }
     }
 
     ///
     /// @return bool
     bool get_value() { return level; }
 
-  private:
+  protected:
     bool input;
     bool level;
+
+    void on_change(bool value) { level = value; }
 };
 } // namespace HWMocker
 

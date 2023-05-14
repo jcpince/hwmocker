@@ -24,6 +24,7 @@
 #define __HWMOCKER_PROCESSINGUNIT_HPP
 
 #include "Gpio.hpp"
+#include "GpioIrq.hpp"
 #include "HwElement.hpp"
 #include "IrqController.hpp"
 
@@ -71,6 +72,10 @@ class ProcessingUnit : virtual public HwElement {
 
     IrqController *get_irq_controller() { return irq_controller; }
 
+    int set_gpio_irq(unsigned int pin_idx, int (*handler)(void));
+
+    void set_gpio_value(unsigned int pin_idx, bool value);
+
   private:
     // Static Private attributes
 
@@ -80,6 +85,7 @@ class ProcessingUnit : virtual public HwElement {
     IrqController *irq_controller = nullptr;
     pthread_t pthread = {0};
     std::vector<Gpio *> gpios;
+    std::vector<GpioIrq *> gpio_irqs;
     pthread_mutex_t start_mutex;
     bool stopped = true;
     int (*main_func)(void *data) = nullptr;

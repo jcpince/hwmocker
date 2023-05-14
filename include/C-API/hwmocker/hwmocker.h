@@ -30,19 +30,25 @@ extern "C" {
 #include <hwmocker/config.h>
 #include <hwmocker/irq.h>
 
+#include <stdbool.h>
+
 struct hwmocker;
 
 struct hwmocker *hwmocker_create(const char *hwmcnf, int (*host_main)(void *), void *host_arg,
                                  int (*soc_main)(void *), void *soc_arg);
 void hwmocker_destroy(struct hwmocker *mocker);
 
-struct hwmocker_device *hwmocker_get_device(struct hwmocker *mocker);
-struct hwmocker_host *hwmocker_get_host(struct hwmocker *mocker);
+void *hwmocker_get_soc(struct hwmocker *mocker);
+void *hwmocker_get_host(struct hwmocker *mocker);
 
 int hwmocker_start(struct hwmocker *mocker);
 void hwmocker_stop(struct hwmocker *mocker);
 
 void hwmocker_wait(struct hwmocker *mocker);
+
+int hwmocker_set_gpio_irq_handler(void *hw_element, unsigned int pin_idx, int (*handler)(void));
+
+void hwmocker_set_gpio_level(void *hw_element, unsigned int pin_idx, bool level);
 
 #ifdef __cplusplus
 } /* extern "C" */

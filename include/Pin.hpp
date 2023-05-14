@@ -52,11 +52,19 @@ class Pin {
     // Public attribute accessor methods
     void connect(Pin *pin);
 
+    std::vector<Pin *> &get_connected_pins() { return connected_pins; }
+
   protected:
     // Static Protected attributes
 
     // Protected attributes
     std::vector<Pin *> connected_pins;
+
+    void change(bool value) {
+        for (Pin *pin : connected_pins)
+            pin->on_change(value);
+    }
+    virtual void on_change(bool value) = 0;
 
     // Public static attribute accessor methods
 

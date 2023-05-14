@@ -97,11 +97,11 @@ void IrqController::interrupt_dest() {
 
 /// Raise qn irq on the destination Hw element
 void IrqController::raise(GenericIrq *irq) {
-    if (irq->enabled())
+    if (!irq->enabled())
         return;
 
     pending_irqs.insert(irq);
-    interrupt_dest();
+    pthread_kill(pthread, HWMOCK_IRQ_SIGNUM);
 }
 
 /// Handle a new irq or the pending irqs
@@ -109,6 +109,7 @@ void IrqController::raise(GenericIrq *irq) {
 int IrqController::handle() {
     int rc;
     // no priority, simply handle the pending one by one
+
     for (GenericIrq *irq : pending_irqs) {
         rc |= irq->handle();
     }

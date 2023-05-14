@@ -147,3 +147,17 @@ void print_stacktrace(FILE *out, unsigned int max_frames) {
     string str = get_stacktrace_str(max_frames);
     fprintf(out, "%s", str.c_str());
 }
+
+int hwmocker_set_gpio_irq_handler(void *hw_element, unsigned int pin_idx, int (*handler)(void)) {
+    ProcessingUnit *processing_unit = (ProcessingUnit *)hw_element;
+    return processing_unit->set_gpio_irq(pin_idx, handler);
+}
+
+void *hwmocker_get_soc(struct hwmocker *mocker) { return (void *)mocker->system->get_soc(); }
+
+void *hwmocker_get_host(struct hwmocker *mocker) { return (void *)mocker->system->get_host(); }
+
+void hwmocker_set_gpio_level(void *hw_element, unsigned int pin_idx, bool level) {
+    ProcessingUnit *processing_unit = (ProcessingUnit *)hw_element;
+    processing_unit->set_gpio_value(pin_idx, level);
+}

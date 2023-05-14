@@ -42,22 +42,22 @@ class System : virtual public HwElement {
     void stop();
     void wait();
 
-  private:
-    HWMocker::ProcessingUnit *soc = nullptr;
-    HWMocker::ProcessingUnit *host = nullptr;
-    std::vector<HWMocker::HwElement> hw_elements;
-
-    int load_config(json config);
-
     ///
     /// Get the value of soc
     /// @return the value of soc
-    HWMocker::ProcessingUnit *getSoc() { return soc; }
+    ProcessingUnit *get_soc() { return soc; }
 
     ///
     /// Get the value of host
     /// @return the value of host
-    HWMocker::ProcessingUnit *getHost() { return host; }
+    ProcessingUnit *get_host() { return host; }
+
+  private:
+    ProcessingUnit *soc = nullptr;
+    ProcessingUnit *host = nullptr;
+    std::vector<HwElement> hw_elements;
+
+    int load_config(json config);
 };
 } // namespace HWMocker
 

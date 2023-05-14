@@ -10,7 +10,16 @@
 			"*.hwmcnf": "json",
 			"stdexcept": "cpp",
 			"*.in": "cpp",
-			"string": "cpp"
+			"string": "cpp",
+			"*.tcc": "cpp",
+			"ratio": "cpp",
+			"system_error": "cpp",
+			"array": "cpp",
+			"functional": "cpp",
+			"regex": "cpp",
+			"tuple": "cpp",
+			"type_traits": "cpp",
+			"utility": "cpp"
 		}
 	}
 }

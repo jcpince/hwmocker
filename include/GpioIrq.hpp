@@ -25,6 +25,7 @@
 
 #include "GenericIrq.hpp"
 #include "Gpio.hpp"
+#include "IrqController.hpp"
 
 namespace HWMocker {
 
@@ -37,7 +38,8 @@ class GpioIrq : public Gpio, virtual public GenericIrq {
 
     ///
     /// Empty Constructor
-    GpioIrq();
+    GpioIrq(IrqController *irq_controller, unsigned int pin_idx);
+    GpioIrq(IrqController *irq_controller, Gpio *gpio);
 
     ///
     /// Empty Destructor
@@ -46,6 +48,11 @@ class GpioIrq : public Gpio, virtual public GenericIrq {
     // Static Public attributes
 
     // Public attributes
+    void enable() {}
+    void disable() {}
+    bool enabled() { return true; }
+    int handle() { return handler(); }
+    void set_handler(int (*handler)(void)) { this->handler = handler; }
 
     // Public static attribute accessor methods
 
@@ -64,6 +71,13 @@ class GpioIrq : public Gpio, virtual public GenericIrq {
     // Static Private attributes
 
     // Private attributes
+    IrqController *irq_controller;
+    int (*handler)(void);
+
+    void on_change(bool value) {
+        level = value;
+        irq_controller->raise(this);
+    }
 
     // Public static attribute accessor methods
 

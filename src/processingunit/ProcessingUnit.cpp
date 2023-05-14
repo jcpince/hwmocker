@@ -57,6 +57,9 @@ ProcessingUnit::~ProcessingUnit() {
     for (Gpio *gpio : gpios)
         delete gpio;
 
+    for (GpioIrq *gpio_irq : gpio_irqs)
+        delete gpio_irq;
+
     if (irq_controller)
         delete irq_controller;
 }
@@ -87,6 +90,37 @@ Pin *ProcessingUnit::get_pin(unsigned int pin_idx) {
     }
     // Not found, checks the devices pins
     return nullptr;
+}
+
+int ProcessingUnit::set_gpio_irq(unsigned int pin_idx, int (*handler)(void)) {
+    vector<Gpio *>::iterator it;
+
+    for (it = gpios.begin(); it != gpios.end(); it++) {
+        if ((*it)->pin_idx == pin_idx)
+            break;
+    }
+    if (it != gpios.end()) {
+        GpioIrq *gpio_irq = new GpioIrq(irq_controller, *it);
+        if (!gpio_irq)
+            return -ENOMEM;
+        gpio_irq->set_handler(handler);
+        gpios.erase(it, it);
+        gpio_irqs.push_back(gpio_irq);
+    } else {
+        return -EINVAL;
+    }
+    return 0;
+}
+
+void ProcessingUnit::set_gpio_value(unsigned int pin_idx, bool value) {
+    for (Gpio *gpio : gpios) {
+        if (gpio->pin_idx == pin_idx)
+            return gpio->set_value(value);
+    }
+    for (GpioIrq *gpio_irq : gpio_irqs) {
+        if (gpio_irq->pin_idx == pin_idx)
+            return gpio_irq->set_value(value);
+    }
 }
 
 void ProcessingUnit::start() {

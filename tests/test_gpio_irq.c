@@ -5,79 +5,44 @@
 #include <stdio.h>
 #include <unistd.h>
 
-#define DEVICE_IRQ_NUMBER 17
+#define SOC_IRQ_NUMBER 17
 #define HOST_IRQ_NUMBER 42
 
-#if 0
-struct device_data {
-    struct hwmocker_device *device;
-    struct hwmocker_irq_desc *irq_desc0;
-    struct hwmocker *mocker;
-};
-
-int device_irq_handler(int irq_number, void *priv) {
-    struct device_data *device_data = priv;
-    puts("device_irq_handler called\n");
+int soc_irq_handler(void) {
+    printf("%s() called\n", __func__);
     return 0;
 }
-
-int device_main(void *priv) {
-    struct device_data *device_data = priv;
-    struct hwmocker_irq_desc *desc;
-
-    int rc = hwmocker_irq_handler_register_handler(device_data->device->irq_handler,
-                                                   DEVICE_IRQ_NUMBER, device_irq_handler,
-                                                   device_data, HWMOCKER_IRQ_RISING_EDGE, 0);
-    if (rc)
-        return rc;
-
-    desc = hwmocker_irq_handler_get_irq_desc(device_data->device->irq_handler, DEVICE_IRQ_NUMBER);
-
-    if (!desc)
-        return -ENOENT;
-
-    return hwmocker_irq_handler_trigger_irq(desc);
-}
-
-struct host_data {
-    struct hwmocker_host *host;
-    struct hwmocker_irq_desc *irq_desc0;
-    struct hwmocker *mocker;
-};
-
-int host_irq_handler(int irq_number, void *priv) {
-    struct host_data *host_data = priv;
-    puts("host_irq_handler called\n");
-    return 0;
-}
-
-int host_main(void *priv) {
-    struct host_data *host_data = priv;
-    int rc = hwmocker_irq_handler_register_handler(host_data->host->irq_handler, HOST_IRQ_NUMBER,
-                                                   host_irq_handler, host_data,
-                                                   HWMOCKER_IRQ_RISING_EDGE, 0);
-    if (rc)
-        return rc;
-
-    return 0;
-}
-#endif
 
 int soc_main(void *priv) {
-    printf("%s(%p) called\n", __func__, priv);
+    struct hwmocker *mocker = *((struct hwmocker **)priv);
+    void *soc = hwmocker_get_soc(mocker);
+
+    printf("%s(%p) called\n", __func__, (void *)mocker);
+    int rc = hwmocker_set_gpio_irq_handler(soc, SOC_IRQ_NUMBER, soc_irq_handler);
+    printf("%s: hwmocker_set_gpio_irq_handler(%d) returned %d\n", __func__, SOC_IRQ_NUMBER, rc);
+
+    rc = hwmocker_set_gpio_irq_handler(soc, 5, soc_irq_handler);
+    printf("%s: hwmocker_set_gpio_irq_handler(%d) returned %d\n", __func__, 5, rc);
+
     sleep(1);
     return 0;
 }
 
+int host_irq_handler(void) { return 0; }
+
 int host_main(void *priv) {
-    printf("%s(%p) called\n", __func__, priv);
+    struct hwmocker *mocker = *((struct hwmocker **)priv);
+    void *host = hwmocker_get_host(mocker);
+
+    printf("%s(%p) called\n", __func__, (void *)mocker);
+
+    sleep(1);
+    hwmocker_set_gpio_level(host, 105, 1);
     sleep(1);
     return 0;
 }
 
 int main(int argc, char **argv) {
-    // struct device_data device_data;
-    // struct host_data host_data;
     struct hwmocker *mocker;
     int rc;
 
@@ -87,9 +52,11 @@ int main(int argc, char **argv) {
         return -EINVAL;
     }
 
-    mocker = hwmocker_create(argv[1], host_main, NULL, soc_main, NULL);
+    mocker = hwmocker_create(argv[1], host_main, &mocker, soc_main, &mocker);
     if (!mocker)
         return -ENOMEM;
+
+    printf("hwmocker_create returned %p\n", (void *)mocker);
 
     rc = hwmocker_start(mocker);
     printf("hwmocker_start returned %d\n", rc);
