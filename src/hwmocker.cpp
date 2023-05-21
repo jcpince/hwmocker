@@ -25,6 +25,10 @@
 #include <hwmocker/irq.h>
 #include <hwmocker_internal.h>
 
+#ifdef CONFIG_HWMOCK_SPI
+#include <SpiDevice.hpp>
+#endif
+
 #include <signal.h>
 #include <stdlib.h>
 
@@ -169,3 +173,21 @@ void hwmocker_set_gpio_level(void *hw_element, unsigned int pin_idx, bool level)
     ProcessingUnit *processing_unit = (ProcessingUnit *)hw_element;
     processing_unit->set_gpio_value(pin_idx, level);
 }
+
+#ifdef CONFIG_HWMOCK_SPI
+void *hwmocker_get_spi_device(void *hw_element, unsigned int spi_idx) {
+    ProcessingUnit *processing_unit = (ProcessingUnit *)hw_element;
+    return processing_unit->get_spi_device(spi_idx);
+}
+
+int hwmocker_spi_xfer(void *_spi_dev, const void *txbuf, void *rxbuf, size_t size) {
+    SpiDevice *spi_dev = (SpiDevice *)_spi_dev;
+    return spi_dev->sync_xfer(txbuf, rxbuf, size);
+}
+
+int hwmocker_spi_xfer_async(void *_spi_dev, const void *txbuf, void *rxbuf, size_t size,
+                            int (*callback)(void *ctx), void *ctx) {
+    SpiDevice *spi_dev = (SpiDevice *)_spi_dev;
+    return spi_dev->async_xfer(txbuf, rxbuf, size, callback, ctx);
+}
+#endif

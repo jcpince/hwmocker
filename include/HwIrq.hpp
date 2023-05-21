@@ -24,6 +24,7 @@
 #define __HWMOCKER_HWIRQ_HPP
 
 #include "GenericIrq.hpp"
+#include "IrqController.hpp"
 
 namespace HWMocker {
 
@@ -32,42 +33,36 @@ namespace HWMocker {
 
 class HwIrq : virtual public GenericIrq {
   public:
-    // Constructors/Destructors
-
-    ///
-    /// Empty Constructor
     HwIrq();
-
-    ///
-    /// Empty Destructor
     virtual ~HwIrq();
 
-    // Static Public attributes
+    void set_irqn(unsigned int irqn) { this->irqn = irqn; }
 
-    // Public attributes
+    void enable() { is_enabled = true; }
+    void disable() { is_enabled = false; }
 
-    // Public static attribute accessor methods
+    bool enabled() { return is_enabled; }
 
-    // Public attribute accessor methods
+    void set_handler(int (*handler)(void *ctx), void *irq_context) {
+        this->handler = handler;
+        this->irq_context = irq_context;
+    }
 
-  protected:
-    // Static Protected attributes
-
-    // Protected attributes
-
-    // Public static attribute accessor methods
-
-    // Public attribute accessor methods
+    /// Handle the irq
+    /// @return int
+    int handle() {
+        if (handler)
+            return handler(irq_context);
+        return 0;
+    }
 
   private:
-    // Static Private attributes
-
-    // Private attributes
-
-    // Public static attribute accessor methods
-
-    // Public attribute accessor methods
+    bool is_enabled = false;
+    unsigned int irqn;
+    void *irq_context = nullptr;
+    int (*handler)(void *ctx) = nullptr;
 };
+
 } // namespace HWMocker
 
 #endif // __HWMOCKER_HWIRQ_HPP

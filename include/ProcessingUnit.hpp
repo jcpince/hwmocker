@@ -27,6 +27,9 @@
 #include "GpioIrq.hpp"
 #include "HwElement.hpp"
 #include "IrqController.hpp"
+#ifdef CONFIG_HWMOCK_SPI
+#include "SpiDevice.hpp"
+#endif
 
 #include <vector>
 
@@ -80,6 +83,17 @@ class ProcessingUnit : virtual public HwElement {
 
     void set_ready();
     void wait_ready();
+
+#ifdef CONFIG_HWMOCK_SPI
+    vector<SpiDevice *> spi_devs;
+    SpiDevice *get_spi_device(unsigned int spi_idx) {
+        for (SpiDevice *spi : spi_devs) {
+            if (spi->get_spi_index() == spi_idx)
+                return spi;
+        }
+        return nullptr;
+    }
+#endif
 
   private:
     // Static Private attributes

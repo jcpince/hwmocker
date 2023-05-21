@@ -31,6 +31,7 @@ extern "C" {
 #include <hwmocker/irq.h>
 
 #include <stdbool.h>
+#include <stddef.h>
 
 struct hwmocker;
 
@@ -51,8 +52,14 @@ void hwmocker_wait_soc_ready(struct hwmocker *mocker);
 void hwmocker_wait_host_ready(struct hwmocker *mocker);
 
 int hwmocker_set_gpio_irq_handler(void *hw_element, unsigned int pin_idx, int (*handler)(void));
-
 void hwmocker_set_gpio_level(void *hw_element, unsigned int pin_idx, bool level);
+
+#ifdef CONFIG_HWMOCK_SPI
+void *hwmocker_get_spi_device(void *hw_element, unsigned int spi_idx);
+int hwmocker_spi_xfer(void *spi_dev, const void *txbuf, void *rxbuf, size_t size);
+int hwmocker_spi_xfer_async(void *spi_dev, const void *txbuf, void *rxbuf, size_t size,
+                            int (*callback)(void *ctx), void *ctx);
+#endif
 
 #ifdef __cplusplus
 } /* extern "C" */

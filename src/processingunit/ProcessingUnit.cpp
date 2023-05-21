@@ -1,7 +1,4 @@
 #include "ProcessingUnit.hpp"
-#ifdef CONFIG_HWMOCK_SPI
-#include "SpiDevice.hpp"
-#endif
 
 #include <hwmocker_internal.h>
 
@@ -72,6 +69,11 @@ ProcessingUnit::~ProcessingUnit() {
     for (GpioIrq *gpio_irq : gpio_irqs)
         delete gpio_irq;
 
+#ifdef CONFIG_HWMOCK_SPI
+    for (SpiDevice *spi_dev : spi_devs)
+        delete spi_dev;
+#endif
+
     if (irq_controller)
         delete irq_controller;
 }
@@ -88,8 +90,14 @@ int ProcessingUnit::load_config(json config) {
     }
 
 #ifdef CONFIG_HWMOCK_SPI
-    if (SpiDevice::config_has_device(config))
-        printf("Has spi\n");
+    if (SpiDevice::config_has_device(config)) {
+        SpiDevice *spi = new SpiDevice();
+        if (!spi)
+            return -ENOMEM;
+        int rc = spi->load_config(config);
+        if (!rc)
+            spi_devs.push_back(spi);
+    }
 #endif
 
     return 0;
@@ -100,7 +108,18 @@ Pin *ProcessingUnit::get_pin(unsigned int pin_idx) {
         if (gpio->pin_idx == pin_idx)
             return gpio;
     }
+    for (GpioIrq *gpio : gpio_irqs) {
+        if (gpio->pin_idx == pin_idx)
+            return gpio;
+    }
     // Not found, checks the devices pins
+#ifdef CONFIG_HWMOCK_SPI
+    for (SpiDevice *spi_dev : spi_devs) {
+        Pin *pin = spi_dev->getPin(pin_idx);
+        if (pin)
+            return pin;
+    }
+#endif
     return nullptr;
 }
 

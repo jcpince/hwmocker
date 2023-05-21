@@ -3,21 +3,25 @@
         "host": {
             "gpio-pins": [101, 102, 103, 104, 105, 106, 107],
             "spi" : {
-              "mosi-pin": 112,
-              "miso-pin": 113,
-              "csn-pin": 114,
-              "clk-pin": 115,
-              "irq": 160
+                "index" : 0,
+                "master" : true,
+                "mosi-pin": 112,
+                "miso-pin": 113,
+                "csn-pin": 114,
+                "clk-pin": 115,
+                "irq": 160
             }
         },
         "soc": {
             "gpio-pins": [1, 2, 3, 4, 5, 6, 7],
             "spi" : {
-              "mosi-pin": 12,
-              "miso-pin": 13,
-              "csn-pin": 14,
-              "clk-pin": 15,
-              "irq": 100
+                "index" : 4,
+                "master" : false,
+                "mosi-pin": 12,
+                "miso-pin": 13,
+                "csn-pin": 14,
+                "clk-pin": 15,
+                "irq": 100
             }
         },
         "host-soc-pin-connections": [

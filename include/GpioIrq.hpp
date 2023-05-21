@@ -76,7 +76,7 @@ class GpioIrq : public Gpio, virtual public GenericIrq {
 
     void on_change(bool value) {
         level = value;
-        irq_controller->raise(this);
+        irq_controller->local_raise(this);
     }
 
     // Public static attribute accessor methods

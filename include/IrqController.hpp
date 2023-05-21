@@ -56,7 +56,8 @@ class IrqController {
     void enableIrqs();
 
     /// Raise qn irq on the destination Hw element
-    void raise(GenericIrq *irq);
+    void local_raise(GenericIrq *irq);
+    void dest_raise(GenericIrq *irq);
 
     /// Handle the pending irqs
     /// @return int

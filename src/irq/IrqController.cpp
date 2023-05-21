@@ -95,13 +95,21 @@ void IrqController::interrupt_dest() {
     pthread_kill(dest_controller->pthread, HWMOCK_IRQ_SIGNUM);
 }
 
-/// Raise qn irq on the destination Hw element
-void IrqController::raise(GenericIrq *irq) {
+/// Raise an irq on the destination Hw element
+void IrqController::local_raise(GenericIrq *irq) {
     if (!irq->enabled())
         return;
 
     pending_irqs.insert(irq);
-    pthread_kill(pthread, HWMOCK_IRQ_SIGNUM);
+    interrupt_self();
+}
+
+void IrqController::dest_raise(GenericIrq *irq) {
+    if (!irq->enabled())
+        return;
+
+    dest_controller->pending_irqs.insert(irq);
+    interrupt_dest();
 }
 
 /// Handle a new irq or the pending irqs

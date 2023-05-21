@@ -25,7 +25,8 @@
 
 #include "Gpio.hpp"
 #include "HwElement.hpp"
-#include "Pin.hpp"
+#include "HwIrq.hpp"
+#include "IrqController.hpp"
 
 namespace HWMocker {
 
@@ -38,11 +39,18 @@ class SpiDevice : virtual public HwElement {
 
     ///
     /// Empty Constructor
-    SpiDevice();
+    SpiDevice(HwIrq *irq = new HwIrq());
 
     ///
     /// Empty Destructor
     virtual ~SpiDevice();
+
+    void set_irq_controller(IrqController *irq_controller) {
+        this->irq_controller = irq_controller;
+    }
+
+    void enable_interrupt() { irq->enable(); }
+    void disable_interrupt() { irq->disable(); }
 
     // Static Public attributes
 
@@ -51,6 +59,7 @@ class SpiDevice : virtual public HwElement {
     // Public static attribute accessor methods
 
     // Public attribute accessor methods
+    unsigned int get_spi_index() { return spi_index; }
 
     ///
     /// @return int
@@ -62,7 +71,7 @@ class SpiDevice : virtual public HwElement {
     /// @param  txbuf
     /// @param  rxbuf
     /// @param  size
-    int sync_xfer(void *txbuf, void *rxbuf, size_t size);
+    int sync_xfer(const void *txbuf, void *rxbuf, size_t size);
 
     ///
     /// @return int
@@ -71,9 +80,24 @@ class SpiDevice : virtual public HwElement {
     /// @param  size
     /// @param  _callback_ctx_void_
     /// @param  ctx
-    int async_xfer(void *txbuf, void *rxbuf, size_t size, int _callback_ctx_void_, void *ctx);
+    int async_xfer(const void *txbuf, void *rxbuf, size_t size, int (*callback)(void *ctx),
+                   void *ctx);
 
     static bool config_has_device(json config) { return config.contains("spi"); }
+
+    Pin *getPin(unsigned int pin_idx) {
+        if (mosi && mosi->pin_idx == pin_idx)
+            return mosi;
+        if (miso && miso->pin_idx == pin_idx)
+            return miso;
+        if (clk && clk->pin_idx == pin_idx)
+            return clk;
+        if (csn && csn->pin_idx == pin_idx)
+            return csn;
+        return nullptr;
+    }
+
+    bool set_remote(SpiDevice *remote_spi_dev);
 
   protected:
     // Static Protected attributes
@@ -88,15 +112,29 @@ class SpiDevice : virtual public HwElement {
     // Static Private attributes
 
     // Private attributes
+    unsigned int spi_index;
+    bool is_master;
+    HwIrq *irq = nullptr;
+    pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+    pthread_mutex_t cond_mutex = PTHREAD_MUTEX_INITIALIZER;
+    pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
+    void *current_rx = nullptr;
+    const void *current_tx = nullptr;
+    size_t current_xfer_size = 0;
+    volatile bool is_listening = false;
+    Pin *miso = nullptr;
+    Pin *mosi = nullptr;
+    Pin *clk = nullptr;
+    Gpio *csn = nullptr;
+    SpiDevice *remote_spi_dev;
+    int (*slave_callback)(void *) = nullptr;
+    void *slave_callback_ctx = nullptr;
+    IrqController *irq_controller = nullptr;
 
-    Pin *miso;
-    Pin *mosi;
-    Pin *clk;
-    Gpio *csn;
+    static int spi_irq_handler(void *ctx);
 
-    // Public static attribute accessor methods
-
-    // Public attribute accessor methods
+    void xmit_locked(const void *txbuf, void *rxbuf, size_t size);
+    void wait_xfer_done();
 
     ///
     /// Set the value of miso

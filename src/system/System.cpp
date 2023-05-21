@@ -1,4 +1,5 @@
 #include "System.hpp"
+#include "SpiDevice.hpp"
 
 #include <hwmocker_internal.h>
 
@@ -90,6 +91,19 @@ int System::load_config(json config) {
         } else
             printf("%s doesn't match\n", connection.c_str());
     }
+
+#ifdef CONFIG_HWMOCK_SPI
+    // Connect the spi devices
+    for (SpiDevice *host_spi : host->spi_devs) {
+        for (SpiDevice *soc_spi : soc->spi_devs) {
+            if (host_spi->set_remote(soc_spi)) {
+                assert(soc_spi->set_remote(host_spi));
+                printf("Host spi %d connected to soc spi %d\n", host_spi->get_spi_index(),
+                       soc_spi->get_spi_index());
+            }
+        }
+    }
+#endif
     return 0;
 }
 
