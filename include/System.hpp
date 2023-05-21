@@ -26,8 +26,6 @@
 #include "HwElement.hpp"
 #include "ProcessingUnit.hpp"
 
-#include <vector>
-
 namespace HWMocker {
 
 ///
@@ -51,6 +49,11 @@ class System : virtual public HwElement {
     /// Get the value of host
     /// @return the value of host
     ProcessingUnit *get_host() { return host; }
+
+    void set_soc_ready() { soc->set_ready(); }
+    void set_host_ready() { host->set_ready(); }
+    void wait_soc_ready() { soc->wait_ready(); }
+    void wait_host_ready() { host->wait_ready(); }
 
   private:
     ProcessingUnit *soc = nullptr;

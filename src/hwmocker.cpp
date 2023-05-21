@@ -157,6 +157,14 @@ void *hwmocker_get_soc(struct hwmocker *mocker) { return (void *)mocker->system-
 
 void *hwmocker_get_host(struct hwmocker *mocker) { return (void *)mocker->system->get_host(); }
 
+void hwmocker_set_soc_ready(struct hwmocker *mocker) { mocker->system->set_soc_ready(); }
+
+void hwmocker_set_host_ready(struct hwmocker *mocker) { mocker->system->set_host_ready(); }
+
+void hwmocker_wait_soc_ready(struct hwmocker *mocker) { mocker->system->wait_soc_ready(); }
+
+void hwmocker_wait_host_ready(struct hwmocker *mocker) { mocker->system->wait_host_ready(); }
+
 void hwmocker_set_gpio_level(void *hw_element, unsigned int pin_idx, bool level) {
     ProcessingUnit *processing_unit = (ProcessingUnit *)hw_element;
     processing_unit->set_gpio_value(pin_idx, level);

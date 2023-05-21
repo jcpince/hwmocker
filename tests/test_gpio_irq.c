@@ -1,15 +1,24 @@
 #include <hwmocker/hwmocker.h>
 #include <hwmocker/irq.h>
 
+#include <assert.h>
 #include <errno.h>
 #include <stdio.h>
 #include <unistd.h>
 
-#define SOC_IRQ_NUMBER 17
-#define HOST_IRQ_NUMBER 42
+#define SOC_IRQ_NUMBER 5
+#define HOST_IRQ_NUMBER 102
+#define INVALID_PIN_NUMBER 1555
+
+#define HOST2SOC_PIN(x) (x - 100)
+#define SOC2HOST_PIN(x) (x + 100)
+
+int soc_irq_triggered;
+int host_irq_triggered;
 
 int soc_irq_handler(void) {
     printf("%s() called\n", __func__);
+    soc_irq_triggered++;
     return 0;
 }
 
@@ -18,17 +27,33 @@ int soc_main(void *priv) {
     void *soc = hwmocker_get_soc(mocker);
 
     printf("%s(%p) called\n", __func__, (void *)mocker);
-    int rc = hwmocker_set_gpio_irq_handler(soc, SOC_IRQ_NUMBER, soc_irq_handler);
+    /* Invalid gpio should fail with -EINVAL */
+    int rc = hwmocker_set_gpio_irq_handler(soc, INVALID_PIN_NUMBER, soc_irq_handler);
+    printf("%s: hwmocker_set_gpio_irq_handler(%d) returned %d\n", __func__, INVALID_PIN_NUMBER,
+           rc);
+    assert(rc == -EINVAL);
+
+    rc = hwmocker_set_gpio_irq_handler(soc, SOC_IRQ_NUMBER, soc_irq_handler);
     printf("%s: hwmocker_set_gpio_irq_handler(%d) returned %d\n", __func__, SOC_IRQ_NUMBER, rc);
 
-    rc = hwmocker_set_gpio_irq_handler(soc, 5, soc_irq_handler);
-    printf("%s: hwmocker_set_gpio_irq_handler(%d) returned %d\n", __func__, 5, rc);
+    // usleep(10000);
+    hwmocker_set_soc_ready(mocker);
+    hwmocker_wait_host_ready(mocker);
 
-    sleep(1);
+    hwmocker_set_gpio_level(soc, HOST2SOC_PIN(HOST_IRQ_NUMBER), 1);
+    /* Invalid gpio should have no effect */
+    hwmocker_set_gpio_level(soc, INVALID_PIN_NUMBER, 1);
+
+    /* wait 10ms here to let the signals to be handled */
+    usleep(10000);
     return 0;
 }
 
-int host_irq_handler(void) { return 0; }
+int host_irq_handler(void) {
+    printf("%s() called\n", __func__);
+    host_irq_triggered++;
+    return 0;
+}
 
 int host_main(void *priv) {
     struct hwmocker *mocker = *((struct hwmocker **)priv);
@@ -36,9 +61,19 @@ int host_main(void *priv) {
 
     printf("%s(%p) called\n", __func__, (void *)mocker);
 
-    sleep(1);
-    hwmocker_set_gpio_level(host, 105, 1);
-    sleep(1);
+    int rc = hwmocker_set_gpio_irq_handler(host, HOST_IRQ_NUMBER, host_irq_handler);
+    printf("%s: hwmocker_set_gpio_irq_handler(%d) returned %d\n", __func__, HOST_IRQ_NUMBER, rc);
+
+    // usleep(10000);
+    hwmocker_set_host_ready(mocker);
+    hwmocker_wait_soc_ready(mocker);
+
+    hwmocker_set_gpio_level(host, SOC2HOST_PIN(SOC_IRQ_NUMBER), 1);
+    /* Invalid gpio should have no effect */
+    hwmocker_set_gpio_level(host, INVALID_PIN_NUMBER, 1);
+
+    /* wait 10ms here to let the signals to be handled */
+    usleep(10000);
     return 0;
 }
 
@@ -66,6 +101,9 @@ int main(int argc, char **argv) {
 
     printf("hwmocker cleaning up...\n");
     hwmocker_destroy(mocker);
+
+    assert(soc_irq_triggered == 1);
+    assert(host_irq_triggered == 1);
 
     printf("That's all folks!!!\n");
     return 0;

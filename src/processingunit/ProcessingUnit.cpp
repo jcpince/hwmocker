@@ -24,9 +24,21 @@ ProcessingUnit::ProcessingUnit(const char *name) : name(name) {
         throw new runtime_error(reason.str());
     }
 
+    memset(&ready_mutex, 0, sizeof(ready_mutex));
+    /* Lock the ready mutex since not ready yet */
+    rc = pthread_mutex_lock(&ready_mutex);
+    if (rc) {
+        delete irq_controller;
+        stringstream reason;
+        reason << "pthread_mutex_lock(ready_mutex) failed with " << strerror(rc) << endl
+               << get_stacktrace_str(64) << endl;
+        throw new runtime_error(reason.str());
+    }
+
     memset(&start_mutex, 0, sizeof(start_mutex));
     rc = pthread_mutex_lock(&start_mutex);
     if (rc) {
+        pthread_mutex_unlock(&ready_mutex);
         delete irq_controller;
         stringstream reason;
         reason << "pthread_mutex_lock(start_mutex) failed with " << strerror(rc) << endl
@@ -100,12 +112,14 @@ int ProcessingUnit::set_gpio_irq(unsigned int pin_idx, int (*handler)(void)) {
             break;
     }
     if (it != gpios.end()) {
-        GpioIrq *gpio_irq = new GpioIrq(irq_controller, *it);
+        Gpio *gpio = *it;
+        GpioIrq *gpio_irq = new GpioIrq(irq_controller, gpio);
         if (!gpio_irq)
             return -ENOMEM;
         gpio_irq->set_handler(handler);
-        gpios.erase(it, it);
         gpio_irqs.push_back(gpio_irq);
+        gpios.erase(it);
+        delete gpio;
     } else {
         return -EINVAL;
     }
@@ -167,4 +181,25 @@ void *HWMocker::processing_unit_thread_fn(void *data) {
     ProcessingUnit *pu = (ProcessingUnit *)data;
     pu->run_thread();
     return NULL;
+}
+
+void ProcessingUnit::set_ready() {
+    int rc = pthread_mutex_unlock(&ready_mutex);
+    if (rc) {
+        stringstream reason;
+        reason << "set_ready: pthread_mutex_lock(ready_mutex) failed with " << strerror(rc) << endl
+               << get_stacktrace_str(64) << endl;
+        throw new runtime_error(reason.str());
+    }
+}
+
+void ProcessingUnit::wait_ready() {
+    int rc = pthread_mutex_lock(&ready_mutex);
+    if (rc) {
+        stringstream reason;
+        reason << "wait_ready: pthread_mutex_lock(ready_mutex) failed with " << strerror(rc)
+               << endl
+               << get_stacktrace_str(64) << endl;
+        throw new runtime_error(reason.str());
+    }
 }

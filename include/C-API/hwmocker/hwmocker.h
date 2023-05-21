@@ -43,8 +43,12 @@ void *hwmocker_get_host(struct hwmocker *mocker);
 
 int hwmocker_start(struct hwmocker *mocker);
 void hwmocker_stop(struct hwmocker *mocker);
-
 void hwmocker_wait(struct hwmocker *mocker);
+
+void hwmocker_set_soc_ready(struct hwmocker *mocker);
+void hwmocker_set_host_ready(struct hwmocker *mocker);
+void hwmocker_wait_soc_ready(struct hwmocker *mocker);
+void hwmocker_wait_host_ready(struct hwmocker *mocker);
 
 int hwmocker_set_gpio_irq_handler(void *hw_element, unsigned int pin_idx, int (*handler)(void));
 

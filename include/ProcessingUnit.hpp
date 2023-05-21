@@ -32,6 +32,8 @@
 
 #include <pthread.h>
 
+using namespace std;
+
 namespace HWMocker {
 
 void *processing_unit_thread_fn(void *data);
@@ -76,6 +78,9 @@ class ProcessingUnit : virtual public HwElement {
 
     void set_gpio_value(unsigned int pin_idx, bool value);
 
+    void set_ready();
+    void wait_ready();
+
   private:
     // Static Private attributes
 
@@ -84,9 +89,10 @@ class ProcessingUnit : virtual public HwElement {
     ProcessingUnit *dest_processing_unit = nullptr;
     IrqController *irq_controller = nullptr;
     pthread_t pthread = {0};
-    std::vector<Gpio *> gpios;
-    std::vector<GpioIrq *> gpio_irqs;
+    vector<Gpio *> gpios;
+    vector<GpioIrq *> gpio_irqs;
     pthread_mutex_t start_mutex;
+    pthread_mutex_t ready_mutex;
     bool stopped = true;
     int (*main_func)(void *data) = nullptr;
     void *main_arg = nullptr;
