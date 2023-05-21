@@ -2,8 +2,8 @@ cmake_minimum_required(VERSION 3.22)
 
 project(hwmocker)
 
-add_compile_options(-fsanitize=address -Wall -Wextra -pedantic -rdynamic)
-add_link_options(-fsanitize=address -Wall -Wextra -pedantic -rdynamic)
+add_compile_options(-fsanitize=address -static-libasan -Wall -Wextra -pedantic -rdynamic)
+add_link_options(-fsanitize=address -static-libasan -Wall -Wextra -pedantic -rdynamic)
 
 add_compile_options(-include ${CMAKE_BINARY_DIR}/generated/hwmocker/config.h)
 
