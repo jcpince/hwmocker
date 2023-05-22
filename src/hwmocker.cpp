@@ -190,4 +190,13 @@ int hwmocker_spi_xfer_async(void *_spi_dev, const void *txbuf, void *rxbuf, size
     SpiDevice *spi_dev = (SpiDevice *)_spi_dev;
     return spi_dev->async_xfer(txbuf, rxbuf, size, callback, ctx);
 }
+
+void hwmocker_spi_enable_irq(void *_spi_dev) {
+    SpiDevice *spi_dev = (SpiDevice *)_spi_dev;
+    return spi_dev->enable_interrupt();
+}
+void hwmocker_spi_disable_irq(void *_spi_dev) {
+    SpiDevice *spi_dev = (SpiDevice *)_spi_dev;
+    return spi_dev->disable_interrupt();
+}
 #endif

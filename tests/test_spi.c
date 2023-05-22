@@ -7,6 +7,9 @@
 #include <string.h>
 #include <unistd.h>
 
+#define __USE_GNU 1
+#include <pthread.h>
+
 #define SOC_SPI_IDX 4
 #define HOST_SPI_IDX 0
 #define XFER_SIZE 256
@@ -18,20 +21,25 @@ struct async_spi_ctx {
     size_t size;
 };
 
+int rx_completed = 0;
+
 void check_rxbuf(unsigned char *rxbuf, unsigned char pattern, size_t size) {
+    char tname[16];
+    pthread_getname_np(pthread_self(), tname, sizeof(tname));
     for (size_t idx = 0; idx < size; idx++) {
         if (rxbuf[idx] != pattern) {
-            printf("%s failed at index %zu - got %x but expected %x\n", __func__, idx,
+            printf("[%s] %s failed at index %zu - got %x but expected %x\n", tname, __func__, idx,
                    rxbuf[idx] & 0xff, pattern & 0xff);
             return;
         }
     }
-    printf("%s(%zu bytes with %x) succeeded\n", __func__, size, pattern & 0xff);
+    printf("[%s] %s(%zu bytes with %x) succeeded\n", tname, __func__, size, pattern & 0xff);
 }
 
 int async_spi_callback(void *ctx) {
     struct async_spi_ctx *async_ctx = (struct async_spi_ctx *)ctx;
     check_rxbuf(async_ctx->rxbuf, HOST_TX_PATTERN, async_ctx->size);
+    rx_completed++;
     return 0;
 }
 
@@ -50,6 +58,8 @@ int soc_main(void *priv) {
         return -1;
     }
 
+    hwmocker_spi_enable_irq(spi_dev);
+
     hwmocker_set_soc_ready(mocker);
     hwmocker_wait_host_ready(mocker);
 
@@ -59,8 +69,7 @@ int soc_main(void *priv) {
 
     memset(rxbuf, 0, XFER_SIZE);
     rc = hwmocker_spi_xfer_async(spi_dev, txbuf, rxbuf, XFER_SIZE, async_spi_callback, &async_ctx);
-    printf("%s - hwmocker_spi_xfer returned %d\n", __func__, rc);
-    check_rxbuf(rxbuf, HOST_TX_PATTERN, XFER_SIZE);
+    printf("%s - hwmocker_spi_xfer_async returned %d\n", __func__, rc);
 
     /* wait 10ms here to let the signals to be handled */
     usleep(100000);
@@ -126,6 +135,8 @@ int main(int argc, char **argv) {
 
     printf("hwmocker cleaning up...\n");
     hwmocker_destroy(mocker);
+
+    assert(rx_completed == 1);
 
     printf("That's all folks!!!\n");
     return 0;

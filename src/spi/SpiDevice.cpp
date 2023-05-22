@@ -9,7 +9,7 @@ using namespace std;
 using namespace HWMocker;
 
 // Constructors/Destructors
-SpiDevice::SpiDevice(HwIrq *irq) {
+SpiDevice::SpiDevice(IrqController *irq_controller, HwIrq *irq) {
     if (!irq) {
         stringstream reason;
         reason << "Cannot allocate with a null hw irq" << endl << get_stacktrace_str(64) << endl;
@@ -17,6 +17,7 @@ SpiDevice::SpiDevice(HwIrq *irq) {
     }
 
     this->irq = irq;
+    this->irq_controller = irq_controller;
     irq->set_handler(spi_irq_handler, this);
 }
 
@@ -34,8 +35,13 @@ SpiDevice::~SpiDevice() {
 
 int SpiDevice::spi_irq_handler(void *ctx) {
     SpiDevice *spi_dev = (SpiDevice *)ctx;
-    if (spi_dev->slave_callback)
-        spi_dev->slave_callback(spi_dev->slave_callback_ctx);
+    if (spi_dev->slave_callback) {
+        int (*slave_callback)(void *) = spi_dev->slave_callback;
+        void *slave_callback_ctx = spi_dev->slave_callback_ctx;
+        spi_dev->slave_callback = nullptr;
+        spi_dev->slave_callback_ctx = nullptr;
+        slave_callback(slave_callback_ctx);
+    }
     return 0;
 }
 
@@ -135,12 +141,12 @@ int SpiDevice::async_xfer(const void *txbuf, void *rxbuf, size_t size, int (*cal
     pthread_mutex_lock(&remote_spi_dev->lock);
     current_rx = rxbuf;
     current_tx = txbuf;
-    current_xfer_size = 0;
+    current_xfer_size = size;
     is_listening = true;
     slave_callback = callback;
     slave_callback_ctx = ctx;
     pthread_mutex_unlock(&remote_spi_dev->lock);
-    return current_xfer_size;
+    return 0;
 }
 
 void SpiDevice::xmit_locked(const void *txbuf, void *rxbuf, size_t size) {

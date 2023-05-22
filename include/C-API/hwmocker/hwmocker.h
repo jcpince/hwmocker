@@ -56,6 +56,8 @@ void hwmocker_set_gpio_level(void *hw_element, unsigned int pin_idx, bool level)
 
 #ifdef CONFIG_HWMOCK_SPI
 void *hwmocker_get_spi_device(void *hw_element, unsigned int spi_idx);
+void hwmocker_spi_enable_irq(void *hw_element);
+void hwmocker_spi_disable_irq(void *hw_element);
 int hwmocker_spi_xfer(void *spi_dev, const void *txbuf, void *rxbuf, size_t size);
 int hwmocker_spi_xfer_async(void *spi_dev, const void *txbuf, void *rxbuf, size_t size,
                             int (*callback)(void *ctx), void *ctx);

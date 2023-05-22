@@ -39,15 +39,11 @@ class SpiDevice : virtual public HwElement {
 
     ///
     /// Empty Constructor
-    SpiDevice(HwIrq *irq = new HwIrq());
+    SpiDevice(IrqController *irq_controller, HwIrq *irq = new HwIrq());
 
     ///
     /// Empty Destructor
     virtual ~SpiDevice();
-
-    void set_irq_controller(IrqController *irq_controller) {
-        this->irq_controller = irq_controller;
-    }
 
     void enable_interrupt() { irq->enable(); }
     void disable_interrupt() { irq->disable(); }

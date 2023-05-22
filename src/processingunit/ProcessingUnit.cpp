@@ -91,7 +91,7 @@ int ProcessingUnit::load_config(json config) {
 
 #ifdef CONFIG_HWMOCK_SPI
     if (SpiDevice::config_has_device(config)) {
-        SpiDevice *spi = new SpiDevice();
+        SpiDevice *spi = new SpiDevice(irq_controller);
         if (!spi)
             return -ENOMEM;
         int rc = spi->load_config(config);
