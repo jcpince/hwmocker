@@ -50,6 +50,7 @@ int soc_main(void *priv) {
     unsigned char txbuf[XFER_SIZE];
     unsigned char rxbuf[XFER_SIZE] = {0};
     struct async_spi_ctx async_ctx = {.rxbuf = rxbuf, .size = XFER_SIZE};
+    int rc;
 
     memset(txbuf, SOC_TX_PATTERN, XFER_SIZE);
 
@@ -58,17 +59,21 @@ int soc_main(void *priv) {
         return -1;
     }
 
+    rc = hwmocker_spi_xfer_async(spi_dev, txbuf, rxbuf, XFER_SIZE, async_spi_callback, &async_ctx);
+    assert(rc == -EINVAL);
     hwmocker_spi_enable_irq(spi_dev);
 
     hwmocker_set_soc_ready(mocker);
     hwmocker_wait_host_ready(mocker);
 
-    int rc = hwmocker_spi_xfer(spi_dev, txbuf, rxbuf, XFER_SIZE);
+    rc = hwmocker_spi_xfer(spi_dev, txbuf, rxbuf, XFER_SIZE);
+    assert(rc == XFER_SIZE);
     printf("%s - hwmocker_spi_xfer returned %d\n", __func__, rc);
     check_rxbuf(rxbuf, HOST_TX_PATTERN, XFER_SIZE);
 
     memset(rxbuf, 0, XFER_SIZE);
     rc = hwmocker_spi_xfer_async(spi_dev, txbuf, rxbuf, XFER_SIZE, async_spi_callback, &async_ctx);
+    assert(rc == 0);
     printf("%s - hwmocker_spi_xfer_async returned %d\n", __func__, rc);
 
     /* wait 10ms here to let the signals to be handled */
@@ -82,6 +87,7 @@ int host_main(void *priv) {
     void *spi_dev = hwmocker_get_spi_device(host, HOST_SPI_IDX);
     unsigned char txbuf[XFER_SIZE];
     unsigned char rxbuf[XFER_SIZE] = {0};
+    int rc;
 
     memset(txbuf, HOST_TX_PATTERN, XFER_SIZE);
 
@@ -96,13 +102,18 @@ int host_main(void *priv) {
     /* wait 100ms so the soc is ready to xfer */
     usleep(10000);
 
-    int rc = hwmocker_spi_xfer(spi_dev, txbuf, rxbuf, XFER_SIZE);
+    rc = hwmocker_spi_xfer_async(spi_dev, txbuf, rxbuf, XFER_SIZE, async_spi_callback, NULL);
+    assert(rc == -EINVAL);
+
+    rc = hwmocker_spi_xfer(spi_dev, txbuf, rxbuf, XFER_SIZE);
+    assert(rc == XFER_SIZE);
     printf("%s - hwmocker_spi_xfer returned %d\n", __func__, rc);
     check_rxbuf(rxbuf, SOC_TX_PATTERN, XFER_SIZE);
 
     usleep(100000);
     memset(rxbuf, 0, XFER_SIZE);
     rc = hwmocker_spi_xfer(spi_dev, txbuf, rxbuf, XFER_SIZE);
+    assert(rc == XFER_SIZE);
     printf("%s - hwmocker_spi_xfer returned %d\n", __func__, rc);
     check_rxbuf(rxbuf, SOC_TX_PATTERN, XFER_SIZE);
 

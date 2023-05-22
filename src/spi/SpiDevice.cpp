@@ -129,6 +129,9 @@ int SpiDevice::sync_xfer(const void *txbuf, void *rxbuf, size_t size) {
 /// @param  ctx
 int SpiDevice::async_xfer(const void *txbuf, void *rxbuf, size_t size, int (*callback)(void *),
                           void *ctx) {
+    if (!irq->enabled())
+        return -EINVAL;
+
     if (is_master && remote_spi_dev->is_listening) {
         // Do it immediately
         int rc = sync_xfer(txbuf, rxbuf, size);
